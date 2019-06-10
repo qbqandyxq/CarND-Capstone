@@ -55,9 +55,27 @@ class DBWNode(object):
 
         # TODO: Create `Controller` object
         # self.controller = Controller(<Arguments you wish to provide>)
-
+        self.controller = Controller(vehicle_mass=vehicle_mass,
+                                    fuel_capacity=fuel_capacity,
+                                     brake_deadband=brake_deadband,
+                                     decel_limit=decel_limit,
+                                     accel_limit=accel_limit,
+                                     wheel_radius=wheel_radius,
+                                     wheel_base=wheel_base,
+                                     max_lat_accel=max_lat_accel,
+                                     max_steer_angle=max_steer_angle)
         # TODO: Subscribe to all the topics you need to
-
+        rospy.Subscriber('/vehicle/dbd_enabled', Bool, self.dbw_enabled_cb)
+        rospy.Subscriber('/twist_cmd', TwistStamped, self.twist_cb)
+        rospy.Subscriber('/current_velocity', TwistStamped, self.velocity_cb)
+        
+        self.current_vel = None
+        self.curr_ang_vel = None
+        self.dbw_enabled = None
+        self.linear_vel = None
+        self.angular_vel = None
+        self.throttle= self. steering = self.brake=0
+        
         self.loop()
 
     def loop(self):
@@ -65,15 +83,31 @@ class DBWNode(object):
         while not rospy.is_shutdown():
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
             # You should only publish the control commands if dbw is enabled
+            self.throttle, self.brake, self.steering = self.controller.control(self.current_vel,
+                                                                               self.curr_ang_vel,
+                                                                               self.linear_vel,
+                                                                               self.angular_vel)
             # throttle, brake, steering = self.controller.control(<proposed linear velocity>,
             #                                                     <proposed angular velocity>,
             #                                                     <current linear velocity>,
             #                                                     <dbw status>,
             #                                                     <any other argument you need>)
-            # if <dbw is enabled>:
-            #   self.publish(throttle, brake, steer)
+            if self.dbw_enabled:
+                self.publish(self.throttle, self.brake, self.steer)
             rate.sleep()
-
+    def dbw_enabled_cb(self, msg):
+        self.dbw_enabled = msg
+    
+    def twist_cb(self, msg):
+        # why x
+        self.linear_vel = msg.twist.linear.x
+        # why z
+        self.angular_vel = msg.twist.angular.z
+    
+    def velocity_cb(self, msg):
+        self.current_vel = ms.twist.linear.x
+    
+    
     def publish(self, throttle, brake, steer):
         tcmd = ThrottleCmd()
         tcmd.enable = True
