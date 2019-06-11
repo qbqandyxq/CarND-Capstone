@@ -60,6 +60,7 @@ class DBWNode(object):
                                      brake_deadband=brake_deadband,
                                      decel_limit=decel_limit,
                                      accel_limit=accel_limit,
+                                     steer_ratio=steer_ratio,
                                      wheel_radius=wheel_radius,
                                      wheel_base=wheel_base,
                                      max_lat_accel=max_lat_accel,
@@ -83,7 +84,8 @@ class DBWNode(object):
         while not rospy.is_shutdown():
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
             # You should only publish the control commands if dbw is enabled
-            self.throttle, self.brake, self.steering = self.controller.control(self.current_vel,
+            if not None in (self.linear_vel, self.current_vel, self.angular_vel):
+            	self.throttle, self.brake, self.steering = self.controller.control(self.current_vel,
                                                                                self.curr_ang_vel,
                                                                                self.linear_vel,
                                                                                self.angular_vel)
@@ -92,11 +94,15 @@ class DBWNode(object):
             #                                                     <current linear velocity>,
             #                                                     <dbw status>,
             #                                                     <any other argument you need>)
+            
             if self.dbw_enabled:
                 self.publish(self.throttle, self.brake, self.steer)
             rate.sleep()
     def dbw_enabled_cb(self, msg):
-        self.dbw_enabled = msg
+        self.dbw_enabled = msg.data
+        print('*'*80)
+        if not self.dbw_enabled:
+        	print('-'*80)
     
     def twist_cb(self, msg):
         # why x
@@ -105,7 +111,7 @@ class DBWNode(object):
         self.angular_vel = msg.twist.angular.z
     
     def velocity_cb(self, msg):
-        self.current_vel = ms.twist.linear.x
+        self.current_vel = msg.twist.linear.x
     
     
     def publish(self, throttle, brake, steer):
