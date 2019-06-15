@@ -57,14 +57,11 @@ class TLClassifier(object):
 
         if scores[top_idx] >= THRESHOLD:
             if classes[top_idx] == 1:
-                print "get light 1"
                 output = TrafficLight.GREEN
             elif classes[top_idx] == 2:
-                print "get light 2 "
-                output = TrafficLight.GREEN
+                output = TrafficLight.RED
             elif classes[top_idx] == 3:
-                print "get light 3"
-                output = TrafficLight.GREEN
+                output = TrafficLight.YELLOW
         else:
             print "can't get light status"
             output = TrafficLight.UNKNOWN
