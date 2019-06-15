@@ -56,14 +56,14 @@ class TLClassifier(object):
         top_idx = scores.argmax()
 
         if scores[top_idx] >= THRESHOLD:
-            if classes[top_idx] == 0:
-                print "get light 0"
-                output = TrafficLight.GREEN
-            elif classes[top_idx] == 1:
-                print "get light 1 "
+            if classes[top_idx] == 1:
+                print "get light 1"
                 output = TrafficLight.GREEN
             elif classes[top_idx] == 2:
-                print "get light 2"
+                print "get light 2 "
+                output = TrafficLight.GREEN
+            elif classes[top_idx] == 3:
+                print "get light 3"
                 output = TrafficLight.GREEN
         else:
             print "can't get light status"
