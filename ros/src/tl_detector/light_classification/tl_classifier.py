@@ -56,36 +56,16 @@ class TLClassifier(object):
         top_idx = scores.argmax()
 
         if scores[top_idx] >= THRESHOLD:
-            print "get light"
             if classes[top_idx] == 0:
+                print "get light 0"
                 output = TrafficLight.GREEN
             elif classes[top_idx] == 1:
+                print "get light 1 "
                 output = TrafficLight.GREEN
             elif classes[top_idx] == 2:
-                output = TrafficLight.GREEN
-            elif classes[top_idx] == 3:
+                print "get light 2"
                 output = TrafficLight.GREEN
         else:
             print "can't get light status"
             output = TrafficLight.UNKNOWN
         return output
-
-
-#def detect_traffic_light(self, scores, biggest_score_idx,
-#                         classes,
-#                         detected_light):
-#    if scores[biggest_score_idx] > TL_THREHOLD:
-#        rospy.logwarn("Current traffic light is: {}"
-#                      .format(self.label_dict[classes[biggest_score_idx]]['name']))
-#                      if classes[biggest_score_idx] == 1:
-#                          detected_light = TrafficLight.GREEN
-#                              elif classes[biggest_score_idx] == 2:
-#                                  detected_light = TrafficLight.RED
-#                                      elif classes[biggest_score_idx] == 3:
-#                                          detected_light = TrafficLight.YELLOW
-#                                  else:
-#                                      rospy.logwarn("Not defined")
-#                                          return detected_light
-
-
-
