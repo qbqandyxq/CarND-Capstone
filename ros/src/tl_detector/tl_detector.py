@@ -88,7 +88,6 @@ class TLDetector(object):
         of times till we start using it. Otherwise the previous stable state is
         used.
         '''
-        print '*'*80,self.state, state
         if self.state != state:
             self.state_count = 0
             self.state = state
