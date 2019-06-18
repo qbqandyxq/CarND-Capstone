@@ -4,8 +4,9 @@ import tensorflow as tf
 import sys
 import numpy as np
 import os
+import rospy
 
-THRESHOLD =0.5
+THRESHOLD =0.6
 NUM_CLASSES = 4
 class TLClassifier(object):
     def __init__(self):
@@ -58,11 +59,15 @@ class TLClassifier(object):
         if scores[top_idx] >= THRESHOLD:
             if classes[top_idx] == 1:
                 output = TrafficLight.GREEN
+                #print "GREEN"
             elif classes[top_idx] == 2:
                 output = TrafficLight.RED
+                #print "RED"
             elif classes[top_idx] == 3:
                 output = TrafficLight.YELLOW
+                #print "YELLOW"
         else:
-            print "can't get light status"
-            output = TrafficLight.UNKNOWN
+            return output
+            #print "can't get light status"
+            #rospy.logwarn("Light not defined")          
         return output

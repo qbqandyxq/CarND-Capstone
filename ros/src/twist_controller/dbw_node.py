@@ -89,21 +89,14 @@ class DBWNode(object):
                                                                                self.curr_ang_vel,
                                                                                self.linear_vel,
                                                                                self.angular_vel)
-            # throttle, brake, steering = self.controller.control(<proposed linear velocity>,
-            #                                                     <proposed angular velocity>,
-            #                                                     <current linear velocity>,
-            #                                                     <dbw status>,
-            #                                                     <any other argument you need>)
             
             if self.dbw_enabled:
                 self.publish(self.throttle, self.brake, self.steer)
             rate.sleep()
     def dbw_enabled_cb(self, msg):
         self.dbw_enabled = msg.data
-        print('*'*80)
         if not self.dbw_enabled:
-        	print('-'*80)
-    
+            self.controller.reset()
     def twist_cb(self, msg):
         # why x
         self.linear_vel = msg.twist.linear.x

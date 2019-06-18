@@ -81,7 +81,6 @@ class TLDetector(object):
         self.has_image = True
         self.camera_image = msg
         light_wp, state = self.process_traffic_lights()
-
         '''
         Publish upcoming red lights at camera frequency.
         Each predicted state has to occur `STATE_COUNT_THRESHOLD` number
@@ -143,7 +142,7 @@ class TLDetector(object):
 
         """
         closest_light = None
-        line_wp_indx =-1
+        line_wp_indx =None
         # List of positions that correspond to the line to stop in front of for a given intersection
         stop_line_positions = self.config['stop_line_positions']
         if(self.pose):
@@ -154,18 +153,18 @@ class TLDetector(object):
             for index, light in enumerate(self.lights):
                 line = stop_line_positions[index]
                 temp_wp_idx = self.get_closest_waypoint(line[0], line[1])
-    
                 dis = temp_wp_idx - car_position_idx
                 if dis >=0 and dis < diff:
                     diff= dis
                     closest_light = light
                     line_wp_indx = temp_wp_idx
 
+        #print "*"*20,diff
         if closest_light:
             state = self.get_light_state(light)
             return line_wp_indx, state
-        self.waypoints = None
-        return line_wp_indx, TrafficLight.UNKNOWN
+        #self.waypoints = None
+        return -1, TrafficLight.UNKNOWN
 
 if __name__ == '__main__':
     try:
