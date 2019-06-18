@@ -39,7 +39,7 @@ class WaypointUpdater(object):
         self.base_waypoints=None
         self.waypoints_2d=None
         self.waypoint_tree=None
-        self.stopline_wp_idx = 10
+        self.stopline_wp_idx = -1
         self.loop()
 
     def loop(self):
@@ -52,7 +52,8 @@ class WaypointUpdater(object):
                 
                 self.publish_waypoints(closest_waypoint_idx)
             rate.sleep()
-
+    
+    
     def get_closest_waypoint_idx(self):
         
         x=self.pose.pose.position.x
@@ -79,7 +80,6 @@ class WaypointUpdater(object):
         #lane = Lane()
         #lane.header = self.base_waypoints.header
         #lane.waypoints = self.base_waypoints.waypoints[closest_idx: closest_idx + LOOKAHEAD_WPS]
-        
         self.final_waypoints_pub.publish(fianl_lane)
 
     def generate_lane(self):
@@ -88,8 +88,7 @@ class WaypointUpdater(object):
         
         farthest_idx = closest_idx + LOOKAHEAD_WPS
         base_waypoints = self.base_waypoints.waypoints[closest_idx : farthest_idx]
-        #rospy.logwarn(self.stopline_wp_idx)
-        #rospy.logwarn(farthest_idx)
+
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
         else:
@@ -102,10 +101,11 @@ class WaypointUpdater(object):
             p = Waypoint()
             p.pose = wp.pose
             # -2 means stop in front of the line.
+            #stop_idx = min(max(self.stopline_wp_idx - closest_idx -2, 2),200)
             stop_idx = max(self.stopline_wp_idx - closest_idx -2, 2)
             distance = self.distance(waypoints, i, stop_idx)
             vel = math.sqrt(2 * MAX_DECEL * distance)
-            if vel < 1. :
+            if vel < 2. :
                 vel = 0
 
             p.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x)
@@ -125,11 +125,10 @@ class WaypointUpdater(object):
 
     def traffic_cb(self, msg):
         self.stopline_wp_idx = msg.data
-        
 
-    def obstacle_cb(self, msg):
+    #def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
-        pass
+     #   pass
 
     def get_waypoint_velocity(self, waypoint):
         return waypoint.twist.twist.linear.x

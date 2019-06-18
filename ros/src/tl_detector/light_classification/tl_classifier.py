@@ -62,6 +62,7 @@ class TLClassifier(object):
                 #print "GREEN"
             elif classes[top_idx] == 2:
                 output = TrafficLight.RED
+                rospy.logwarn("red")
                 #print "RED"
             elif classes[top_idx] == 3:
                 output = TrafficLight.YELLOW
