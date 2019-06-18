@@ -20,7 +20,6 @@ class Controller(object):
 
         tau = 0.5 # 1/(2pi *tau) = cutoff frequency
         ts = 0.02 # sample time
-        
         self.vel_lpf = LowPassFilter(tau, ts)
         self.vehicle_mass=vehicle_mass
         self.fuel_capacity = fuel_capacity
@@ -40,10 +39,6 @@ class Controller(object):
         
         current_vel = self.vel_lpf.filt(current_vel)
         
-        rospy.logwarn("angular vel: {0}".format(angular_vel))
-        rospy.logwarn("target velcity : {0}".format(liner_vel))
-        rospy.logwarn("lpf velocity : {0}".format(self.vel_lpf.get()))
-        
         steering = self.yaw_controller.get_steering(linear_vel, angular_vel, current_vel)
         
         vel_error = linear_vel - current_vel
@@ -57,8 +52,9 @@ class Controller(object):
         brake =0.
         
         if linear_vel == 0 and current_vel < 0.1:
+            rospy.logwarn('1')
             throttle =0
-            brake = 100 # N*m - to hold the car in place if we are stopped at a light, acceleration ~ 1m/s^2
+            brake = 400 # N*m - to hold the car in place if we are stopped at a light, acceleration ~ 1m/s^2
         elif throttle <0.1 and vel_error <0:
             throttle =0
             decel = max(vel_error, self.decel_limit)
